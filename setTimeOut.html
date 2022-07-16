@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;600&display=swap" rel="stylesheet">
+    <title>setTimeOut</title>
+    <style>
+        body{
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+        }
+        p{
+            display: inline-block;
+            font-size: 35px;  
+            margin-top: 50px;
+            margin-left: 25px;   
+            padding: 12px;  
+        }
+        button{
+            width: 60px;
+            height: 60px;
+            border-radius: 100%;
+            color:white;
+            border:none;
+            font-family: 'Roboto Mono', monospace;
+            padding: 10px;
+            font-weight: 600;
+        }
+        button#reset{
+            background-color: rgb(17, 93, 68);
+        }
+        button#start{
+            background-color: palevioletred;
+        }
+        button#split{
+            background-color: violet;
+        }
+      
+       #reset:hover{
+           background-color: black;
+           transition: 0.7s;
+       } 
+       #start:hover{
+           background-color: black;
+           transition: 0.7s;
+       }
+       #split:hover{
+           background-color: black;
+           transition: 0.7s;
+       }
+       .blackBackground{
+           display: block;
+           margin-left:auto;
+           margin-right:auto;
+       }
+       .addPadding{
+            margin-top: 5px;
+            margin-left: 25px; 
+           text-align: center;
+       }
+       .specifications{
+        font-weight: 600;
+       }
+       .lessFontWeight{
+           font-weight: 200;
+       }
+       hr:after {
+            content:".......................................................";
+            letter-spacing: 4px; 
+            width:50%;
+            margin-bottom: 100px;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="blackBackground">
+        <p class="specifications" id="timeCurrent">00:00:00</p>
+        <button id="reset" class="btn" onclick="resetTime()">Reset</button>
+        <button id="start" class="btn" onclick="pauseTime()">Pause</button>
+        <button id="split" class="btn" onclick="splitTime()">Split</button>
+    <div>
+    <hr style="border-style: none;">
+    
+
+    <script>
+        const pTag = document.getElementById("timeCurrent");
+        const resetButton = document.getElementById("reset");
+        const startButton = document.getElementById("start");
+        const splitButton = document.getElementById("split");
+        let restAllowed= 0;
+        let intervalID;
+        let pausedTimer = 0;
+        let previousTimeStamp = "00:00:00";
+        const computeDifference = (currentTime, previousTimeStamp) => {
+            const currentTimeSplit = currentTime.split(":");
+            const previousTimeStampSplit = previousTimeStamp.split(":");
+            const currentTimeSeconds = parseInt(currentTimeSplit[2]);
+            const previousTimeStampSeconds = parseInt(previousTimeStampSplit[2]);
+            const currentTimeMinutes = parseInt(currentTimeSplit[1]);
+            const previousTimeStampMinutes = parseInt(previousTimeStampSplit[1]);
+            const currentTimeHours = parseInt(currentTimeSplit[0]);
+            const previousTimeStampHours = parseInt(previousTimeStampSplit[0]);
+            let retStringSeconds;
+            let retStringMinutes; 
+            let retStringHours;
+            let retString="";
+            if(previousTimeStampMinutes > currentTimeMinutes){
+                retStringMinutes = (60-previousTimeStampMinutes)+currentTimeMinutes;
+            }
+            else{
+                retStringMinutes = currentTimeMinutes-previousTimeStampMinutes;
+            }
+            if(previousTimeStampSeconds > currentTimeSeconds){
+                retStringSeconds = (60-previousTimeStampSeconds)+currentTimeSeconds;
+                retStringMinutes = retStringMinutes-1;
+            }
+            else{
+                retStringSeconds = currentTimeSeconds-previousTimeStampSeconds;
+            } 
+            retStringHours = currentTimeHours-previousTimeStampHours;
+            if(retStringHours < 10){
+                retString = retString +"0"+retStringHours.toString()+":";
+            }
+            else{
+                retString = retString+retStringHours.toString()+":";
+            }
+            if(retStringMinutes < 10){
+                retString = retString+"0"+retStringMinutes.toString()+":";
+            }
+            else{
+                retString = retString + retStringMinutes.toString()+":";
+            }
+            if(retStringSeconds < 10){
+                retString = retString+"0"+retStringSeconds.toString();
+            }
+            else{
+                retString=retString + retStringSeconds.toString();
+            }
+            return retString;
+        }
+        
+        const resetTime = () =>{
+            location.reload();
+            pTag.innerText="00:00:00";
+        }
+        const splitTime = () =>{
+            let currentTime = pTag.innerText;
+            const timeStampAdd = document.createElement("h2");
+            timeStampAdd.innerText=computeDifference(currentTime, previousTimeStamp);
+            timeStampAdd.setAttribute("class","addPadding");
+            timeStampAdd.classList.add("lessFontWeight");
+            document.body.appendChild(timeStampAdd);
+            previousTimeStamp = currentTime;
+        }
+
+        const incrementSecond = () => {
+            const secondCurrent = pTag.innerText;
+            let timeSplit = secondCurrent.split(":");
+            let hours = parseInt(timeSplit[0]);
+            let minutes = parseInt(timeSplit[1]);
+            let seconds = parseInt(timeSplit[2]);
+            if(seconds<59){
+                seconds = seconds+1;
+            }
+            else{
+                seconds = "00";
+                if(minutes< 59){
+                    minutes= minutes+1;
+                }
+                else{
+                    minutes = "00";
+                    if(hours < 23){
+                        hours= hours +1;
+                    }
+                    else{
+                        hours= "00";
+                    }
+                }
+            }
+            if(minutes<10){
+                minutes = "0"+minutes,toString();
+            }
+            if(hours<10){
+                hours = "0"+hours.toString();
+            }
+            if(seconds<10){
+                seconds = "0"+seconds.toString();
+            }
+            pTag.innerText = hours + ":" + minutes + ":" + seconds;
+            
+        }
+        const pauseTime = () =>{
+            if(pausedTimer === 0){
+                clearInterval(intervalID);
+                pausedTimer =1;
+                startButton.innerHTML="Start";
+            }
+            else{
+                intervalID = setInterval(incrementSecond,1000);
+                pausedTimer =0;
+                startButton.innerHTML="Pause";
+            }
+        }
+        intervalID=setInterval(incrementSecond,1000);
+    </script>
+</body>
+</html>
